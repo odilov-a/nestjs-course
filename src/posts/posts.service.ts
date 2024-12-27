@@ -11,17 +11,46 @@ export class PostsService {
     @InjectModel(Post.name) private postModel: Model<Post>,
   ) { }
 
-  async getAllPosts(): Promise<{ message: string; data: Post[] }> {
+  // async getAllPosts(): Promise<{ message: string; data: Post[] }> {
+  //   const posts = await this.postModel.find();
+  //   return { message: 'Successfully fetched all posts', data: posts };
+  // }
+
+  // async getPostById(id: string): Promise<{ message: string; data: Post }> {
+  //   const post = await this.postModel.findById(id);
+  //   if (!post) {
+  //     throw new NotFoundException(`Post with ID ${id} not found`);
+  //   }
+  //   return { message: 'Successfully fetched the post', data: post };
+  // }
+
+  async getAllPosts(lang: string): Promise<{ message: string; data: any[] }> {
     const posts = await this.postModel.find();
-    return { message: 'Successfully fetched all posts', data: posts };
+    const translatedPosts = posts.map(post => {
+      return {
+        _id: post._id,
+        title: lang === 'uz' ? post.titleUz : post.titleRu,
+        content: lang === 'uz' ? post.contentUz : post.contentRu,
+        photo_url: post.photo_url,
+        photo_urls: post.photo_urls,
+      };
+    });
+    return { message: 'Successfully fetched all posts', data: translatedPosts };
   }
 
-  async getPostById(id: string): Promise<{ message: string; data: Post }> {
+  async getPostById(id: string, lang: string): Promise<{ message: string; data: any }> {
     const post = await this.postModel.findById(id);
     if (!post) {
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
-    return { message: 'Successfully fetched the post', data: post };
+    const translatedPost = {
+      _id: post._id,
+      title: lang === 'uz' ? post.titleUz : post.titleRu,
+      content: lang === 'uz' ? post.contentUz : post.contentRu,
+      photo_url: post.photo_url,
+      photo_urls: post.photo_urls,
+    };
+    return { message: 'Successfully fetched the post', data: translatedPost };
   }
 
   async createPost(createPostDto: CreatePostDto): Promise<{ message: string; data: Post }> {

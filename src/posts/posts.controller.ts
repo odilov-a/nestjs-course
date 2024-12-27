@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -12,14 +12,24 @@ export class PostsController {
     return this.postsService.createPost(createPostDto);
   }
 
+  // @Get()
+  // findAll() {
+  //   return this.postsService.getAllPosts();
+  // }
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.postsService.getPostById(id);
+  // }
+
   @Get()
-  findAll() {
-    return this.postsService.getAllPosts();
+  async getAllPosts(@Query('lang') lang: string) {
+    return this.postsService.getAllPosts(lang || 'uz');
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.getPostById(id);
+  async getPostById(@Param('id') id: string, @Query('lang') lang: string) {
+    return this.postsService.getPostById(id, lang || 'uz');
   }
 
   @Put(':id')
