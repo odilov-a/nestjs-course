@@ -12,16 +12,6 @@ export class PostsController {
     return this.postsService.createPost(createPostDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.postsService.getAllPosts();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.postsService.getPostById(id);
-  // }
-
   @Get()
   async getAllPosts(@Query('lang') lang: string) {
     return this.postsService.getAllPosts(lang || 'uz');
