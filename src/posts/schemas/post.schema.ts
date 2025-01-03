@@ -14,10 +14,16 @@ export class Post {
     contentUz: string;
 
     @Prop()
+    slugUz: string;
+
+    @Prop()
     titleRu: string;
 
     @Prop()
     contentRu: string;
+
+    @Prop()
+    slugRu: string;
 
     @Prop()
     photo_url: string;

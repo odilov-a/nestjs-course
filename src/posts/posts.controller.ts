@@ -27,6 +27,11 @@ export class PostsController {
     return this.postsService.getAllPosts(lang || 'uz');
   }
 
+  @Get(':slug')
+  async getPostBySlug(@Param('slug') slug: string, @Query('lang') lang: string) {
+    return this.postsService.getPostBySlug(slug, lang || 'uz');
+  }
+
   @Get(':id')
   async getPostById(@Param('id') id: string, @Query('lang') lang: string) {
     return this.postsService.getPostById(id, lang || 'uz');

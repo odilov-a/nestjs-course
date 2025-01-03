@@ -31,11 +31,28 @@ export class PostsService {
         _id: post._id,
         title: lang === 'uz' ? post.titleUz : post.titleRu,
         content: lang === 'uz' ? post.contentUz : post.contentRu,
+        slug: lang === 'uz' ? post.slugUz : post.slugRu,
         photo_url: post.photo_url,
         photo_urls: post.photo_urls,
       };
     });
     return { message: 'Successfully fetched all posts', data: translatedPosts };
+  }
+
+  async getPostBySlug(slug: string, lang: string): Promise<{ message: string; data: any }> {
+    const post = await this.postModel.findOne({ $or: [{ slugUz: slug }, { slugRu: slug }] });
+    if (!post) {
+      throw new NotFoundException(`Post with slug ${slug} not found`);
+    }
+    const translatedPost = {
+      _id: post._id,
+      title: lang === 'uz' ? post.titleUz : post.titleRu,
+      content: lang === 'uz' ? post.contentUz : post.contentRu,
+      slug: lang === 'uz' ? post.slugUz : post.slugRu,
+      photo_url: post.photo_url,
+      photo_urls: post.photo_urls,
+    };
+    return { message: 'Successfully fetched the post', data: translatedPost };
   }
 
   async getPostById(id: string, lang: string): Promise<{ message: string; data: any }> {
@@ -47,16 +64,36 @@ export class PostsService {
       _id: post._id,
       title: lang === 'uz' ? post.titleUz : post.titleRu,
       content: lang === 'uz' ? post.contentUz : post.contentRu,
+      slug: lang === 'uz' ? post.slugUz : post.slugRu,
       photo_url: post.photo_url,
       photo_urls: post.photo_urls,
     };
     return { message: 'Successfully fetched the post', data: translatedPost };
   }
 
+  // async createPost(createPostDto: CreatePostDto): Promise<{ message: string; data: Post }> {
+  //   const newPost = new this.postModel(createPostDto);
+  //   const savedPost = await newPost.save();
+  //   return { message: 'Successfully created a new post', data: savedPost };
+  // }
+
   async createPost(createPostDto: CreatePostDto): Promise<{ message: string; data: Post }> {
+    const randomSuffix = Math.floor(Math.random() * 100000);
+    createPostDto.slugUz = `${this.slugify(createPostDto.titleUz)}-${randomSuffix}`;
+    createPostDto.slugRu = `${this.slugify(createPostDto.titleRu)}-${randomSuffix}`;
     const newPost = new this.postModel(createPostDto);
     const savedPost = await newPost.save();
     return { message: 'Successfully created a new post', data: savedPost };
+  }
+
+  slugify(text: string): string {
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-');
   }
 
   async updatePost(id: string, updatePostDto: UpdatePostDto): Promise<{ message: string; data: Post }> {
